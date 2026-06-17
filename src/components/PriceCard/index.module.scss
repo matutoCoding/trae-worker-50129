@@ -1,0 +1,96 @@
+@use '@/styles/variables.scss' as *;
+
+.priceCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md $spacing-lg;
+  box-shadow: $shadow-card;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  .iconWrap {
+    width: 72rpx;
+    height: 72rpx;
+    border-radius: $radius-md;
+    background: linear-gradient(135deg, $color-primary-accent 0%, $color-primary-light 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32rpx;
+    flex-shrink: 0;
+  }
+
+  .content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+  }
+
+  .name {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .priceRange {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .rightSide {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4rpx;
+    flex-shrink: 0;
+  }
+
+  .todayPrice {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  .unit {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    font-weight: $font-weight-normal;
+    margin-left: 4rpx;
+  }
+
+  .change {
+    display: flex;
+    align-items: center;
+    gap: 4rpx;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    padding: 2rpx $spacing-xs;
+    border-radius: $radius-xs;
+
+    &Up {
+      background: rgba($color-price-up, 0.1);
+      color: $color-price-up;
+    }
+
+    &Down {
+      background: rgba($color-price-down, 0.1);
+      color: $color-price-down;
+    }
+
+    &Flat {
+      background: rgba($color-text-tertiary, 0.1);
+      color: $color-text-tertiary;
+    }
+  }
+}

@@ -1,0 +1,178 @@
+@use '@/styles/variables.scss' as *;
+
+.queuePage {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.berthOverview {
+  padding: $spacing-lg $page-padding;
+  background: linear-gradient(180deg, $color-primary 0%, $color-primary-light 100%);
+
+  .overviewTitle {
+    color: $color-text-white;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    margin-bottom: $spacing-lg;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  .berthGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $spacing-sm;
+  }
+
+  .berthZone {
+    background: rgba($color-text-white, 0.95);
+    border-radius: $radius-md;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    box-shadow: $shadow-card;
+  }
+
+  .zoneName {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-primary;
+  }
+
+  .zoneStats {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    display: flex;
+    align-items: baseline;
+    gap: 4rpx;
+  }
+
+  .occupied {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .available {
+    color: $color-success;
+    font-weight: $font-weight-semibold;
+  }
+
+  .progressBar {
+    height: 6rpx;
+    background: $color-divider;
+    border-radius: 999rpx;
+    overflow: hidden;
+  }
+
+  .progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, $color-primary-light 0%, $color-primary 100%);
+    border-radius: 999rpx;
+    transition: width $transition-base;
+  }
+}
+
+.tabsWrap {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: $color-bg-page;
+  padding: $spacing-md $page-padding 0;
+
+  .tabs {
+    display: flex;
+    background: $color-bg-card;
+    border-radius: $radius-button;
+    padding: 6rpx;
+    box-shadow: $shadow-card;
+  }
+
+  .tab {
+    flex: 1;
+    height: 68rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-button;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+    transition: all $transition-base;
+
+    &Active {
+      background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+      color: $color-text-white;
+      box-shadow: 0 2rpx 8rpx rgba($color-primary, 0.3);
+    }
+  }
+
+  .tabCount {
+    margin-left: 4rpx;
+    font-size: $font-size-xs;
+    opacity: 0.8;
+  }
+}
+
+.queueList {
+  padding: $spacing-md $page-padding;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.summaryBar {
+  margin: $spacing-md $page-padding 0;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: $shadow-card;
+
+  .summaryItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4rpx;
+  }
+
+  .summaryNum {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-primary;
+  }
+
+  .summaryLabel {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .divider {
+    width: 1rpx;
+    height: 60rpx;
+    background: $color-divider;
+  }
+}
+
+.emptyState {
+  padding: $spacing-xl * 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
+
+  .emptyIcon {
+    font-size: 80rpx;
+    opacity: 0.5;
+  }
+
+  .emptyText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}

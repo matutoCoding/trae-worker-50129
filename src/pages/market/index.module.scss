@@ -1,0 +1,346 @@
+@use '@/styles/variables.scss' as *;
+
+.marketPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.headerSection {
+  background: linear-gradient(180deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-lg $page-padding 120rpx;
+
+  .headerTitle {
+    color: $color-text-white;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    margin-bottom: $spacing-lg;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  .entryGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $spacing-md;
+  }
+
+  .entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-xs;
+
+    &:active {
+      opacity: 0.9;
+    }
+  }
+
+  .entryIcon {
+    width: 88rpx;
+    height: 88rpx;
+    border-radius: 50%;
+    background: rgba($color-text-white, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36rpx;
+    box-shadow: $shadow-float;
+  }
+
+  .entryName {
+    font-size: $font-size-sm;
+    color: $color-text-white;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.settlementSummary {
+  margin: -80rpx $page-padding 0;
+  position: relative;
+  z-index: 2;
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-lg;
+  box-shadow: $shadow-float;
+
+  .summaryHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-lg;
+  }
+
+  .summaryTitle {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  .summaryDate {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+  }
+
+  .summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+  }
+
+  .summaryItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+    padding: $spacing-md;
+    background: $color-bg-hover;
+    border-radius: $radius-md;
+  }
+
+  .summaryNum {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  .summaryUnit {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-left: 4rpx;
+    font-weight: $font-weight-normal;
+  }
+
+  .summaryLabel {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+
+  .summaryAction {
+    height: $button-height-lg;
+    border-radius: $radius-button;
+    background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+    color: $color-text-white;
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4rpx 16rpx rgba($color-primary, 0.3);
+    transition: all $transition-base;
+
+    &:active {
+      transform: scale(0.98);
+      opacity: 0.95;
+    }
+  }
+}
+
+.debtBanner {
+  margin: $spacing-lg $page-padding 0;
+  background: linear-gradient(135deg, rgba($color-warning, 0.12) 0%, rgba($color-warning, 0.06) 100%);
+  border: 1rpx solid rgba($color-warning, 0.3);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .debtInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  .debtIcon {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: $radius-md;
+    background: rgba($color-warning, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36rpx;
+  }
+
+  .debtText {
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+  }
+
+  .debtLabel {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  .debtAmount {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-warning;
+  }
+
+  .debtAction {
+    padding: $spacing-sm $spacing-lg;
+    background: $color-warning;
+    color: $color-text-white;
+    border-radius: $radius-button;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+
+    &:active {
+      opacity: 0.9;
+    }
+  }
+}
+
+.priceSection {
+  margin: $spacing-lg $page-padding 0;
+
+  .sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+  }
+
+  .sectionTitle {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  .viewAll {
+    font-size: $font-size-sm;
+    color: $color-primary;
+  }
+
+  .priceList {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.transactionsSection {
+  margin: $spacing-lg $page-padding 0;
+
+  .sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+  }
+
+  .sectionTitle {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  .viewAll {
+    font-size: $font-size-sm;
+    color: $color-primary;
+  }
+
+  .transList {
+    background: $color-bg-card;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-card;
+    overflow: hidden;
+  }
+
+  .transItem {
+    padding: $spacing-md $spacing-lg;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:not(:last-child) {
+      border-bottom: 1rpx solid $color-divider;
+    }
+
+    &:active {
+      background: $color-bg-hover;
+    }
+  }
+
+  .transInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .transIcon {
+    width: 64rpx;
+    height: 64rpx;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28rpx;
+    flex-shrink: 0;
+
+    &Income {
+      background: rgba($color-success, 0.12);
+    }
+
+    &Expense {
+      background: rgba($color-error, 0.12);
+    }
+
+    &Refund {
+      background: rgba($color-warning, 0.12);
+    }
+  }
+
+  .transText {
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .transDesc {
+    font-size: $font-size-md;
+    color: $color-text-primary;
+    font-weight: $font-weight-medium;
+    @include text-ellipsis;
+  }
+
+  .transTime {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .transAmount {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    flex-shrink: 0;
+
+    &Income {
+      color: $color-success;
+    }
+
+    &Expense {
+      color: $color-error;
+    }
+
+    &Refund {
+      color: $color-warning;
+    }
+  }
+}

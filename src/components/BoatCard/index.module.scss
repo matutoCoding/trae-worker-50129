@@ -1,0 +1,139 @@
+@use '@/styles/variables.scss' as *;
+
+.boatCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .boatInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  .boatIcon {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: $radius-md;
+    background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40rpx;
+  }
+
+  .boatName {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .boatNumber {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+    margin-top: 4rpx;
+  }
+
+  .status {
+    padding: $spacing-xs $spacing-md;
+    border-radius: $radius-button;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+
+    &Docked {
+      background: rgba($color-success, 0.12);
+      color: $color-success;
+    }
+
+    &Waiting {
+      background: rgba($color-warning, 0.12);
+      color: $color-warning;
+    }
+
+    &AtSea {
+      background: rgba($color-info, 0.12);
+      color: $color-info;
+    }
+
+    &Departed {
+      background: rgba($color-text-tertiary, 0.12);
+      color: $color-text-tertiary;
+    }
+  }
+
+  .infoGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1rpx solid $color-divider;
+  }
+
+  .infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+  }
+
+  .infoLabel {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .infoValue {
+    font-size: $font-size-md;
+    color: $color-text-primary;
+    font-weight: $font-weight-medium;
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: $spacing-md;
+    border-top: 1rpx solid $color-divider;
+  }
+
+  .berthInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  .berthNum {
+    font-weight: $font-weight-semibold;
+    color: $color-primary;
+  }
+
+  .action {
+    padding: $spacing-sm $spacing-lg;
+    border-radius: $radius-button;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+    color: $color-text-white;
+    transition: all $transition-base;
+
+    &:active {
+      opacity: 0.9;
+      transform: scale(0.98);
+    }
+  }
+}

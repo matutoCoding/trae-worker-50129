@@ -1,0 +1,299 @@
+@use '@/styles/variables.scss' as *;
+
+.debtPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.summarySection {
+  background: linear-gradient(180deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-xl $page-padding;
+  padding-bottom: 100rpx;
+
+  .summaryTitle {
+    color: rgba($color-text-white, 0.9);
+    font-size: $font-size-sm;
+    margin-bottom: $spacing-xs;
+  }
+
+  .summaryAmount {
+    font-size: 80rpx;
+    font-weight: $font-weight-bold;
+    color: $color-text-white;
+    line-height: 1;
+    margin-bottom: $spacing-sm;
+    font-family: 'DIN', monospace;
+  }
+
+  .summaryUnit {
+    font-size: $font-size-lg;
+    color: rgba($color-text-white, 0.8);
+    font-weight: $font-weight-normal;
+    margin-left: $spacing-xs;
+  }
+
+  .summarySub {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    color: rgba($color-text-white, 0.85);
+    font-size: $font-size-sm;
+  }
+
+  .divider {
+    width: 1rpx;
+    height: 24rpx;
+    background: rgba($color-text-white, 0.3);
+  }
+}
+
+.statsRow {
+  margin: -64rpx $page-padding $spacing-lg;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+  position: relative;
+  z-index: 2;
+
+  .statCard {
+    background: $color-bg-card;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    box-shadow: $shadow-float;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4rpx;
+  }
+
+  .statNum {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  .statLabel {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .numUnpaid { color: $color-error; }
+  .numPartial { color: $color-warning; }
+  .numPaid { color: $color-success; }
+}
+
+.tabs {
+  margin: 0 $page-padding $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  padding: 6rpx;
+  display: flex;
+  box-shadow: $shadow-card;
+
+  .tab {
+    flex: 1;
+    height: 68rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-button;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+    transition: all $transition-base;
+
+    &Active {
+      background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+      color: $color-text-white;
+    }
+  }
+}
+
+.debtList {
+  padding: 0 $page-padding;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.debtCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  .cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1rpx solid $color-divider;
+  }
+
+  .debtorInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  .avatar {
+    width: 72rpx;
+    height: 72rpx;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $color-warning 0%, $color-gold 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-lg;
+    color: $color-text-white;
+    font-weight: $font-weight-semibold;
+  }
+
+  .debtorName {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .debtorPhone {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 4rpx;
+  }
+
+  .statusBadge {
+    padding: $spacing-xs $spacing-md;
+    border-radius: $radius-button;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+
+    &Unpaid {
+      background: rgba($color-error, 0.12);
+      color: $color-error;
+    }
+
+    &Partial {
+      background: rgba($color-warning, 0.12);
+      color: $color-warning;
+    }
+
+    &Paid {
+      background: rgba($color-success, 0.12);
+      color: $color-success;
+    }
+  }
+
+  .amountRow {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+  }
+
+  .amountBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+  }
+
+  .amountLabel {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .amountValue {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-error;
+  }
+
+  .paidValue {
+    color: $color-success;
+    font-size: $font-size-lg;
+  }
+
+  .progressWrap {
+    margin-bottom: $spacing-md;
+  }
+
+  .progressBar {
+    height: 12rpx;
+    background: $color-divider;
+    border-radius: 999rpx;
+    overflow: hidden;
+  }
+
+  .progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, $color-success 0%, $color-primary-light 100%);
+    border-radius: 999rpx;
+    transition: width $transition-slow;
+  }
+
+  .progressLabel {
+    display: flex;
+    justify-content: space-between;
+    margin-top: $spacing-xs;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .metaRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    padding-top: $spacing-md;
+    border-top: 1rpx solid $color-divider;
+  }
+
+  .remark {
+    flex: 1;
+    color: $color-text-secondary;
+  }
+
+  .actions {
+    display: flex;
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
+  }
+
+  .actionBtn {
+    flex: 1;
+    height: $button-height-md;
+    border-radius: $radius-button;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    transition: all $transition-base;
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    &Primary {
+      background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+      color: $color-text-white;
+    }
+
+    &Warning {
+      background: linear-gradient(135deg, $color-warning 0%, $color-gold 100%);
+      color: $color-text-white;
+    }
+
+    &Secondary {
+      background: $color-bg-hover;
+      color: $color-text-secondary;
+    }
+  }
+}

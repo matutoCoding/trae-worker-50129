@@ -1,0 +1,270 @@
+@use '@/styles/variables.scss' as *;
+
+.tradePage {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.entrySection {
+  background: linear-gradient(180deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-lg $page-padding;
+  padding-bottom: $spacing-xl * 2;
+
+  .entryGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $spacing-md;
+  }
+
+  .entry {
+    background: rgba($color-text-white, 0.95);
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-xs;
+    box-shadow: $shadow-card;
+    transition: all $transition-base;
+
+    &:active {
+      transform: scale(0.96);
+      opacity: 0.95;
+    }
+  }
+
+  .entryIcon {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36rpx;
+  }
+
+  .entryName {
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+    font-weight: $font-weight-medium;
+    text-align: center;
+  }
+
+  .entryDesc {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+}
+
+.statsCards {
+  margin-top: -48rpx;
+  padding: 0 $page-padding;
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+
+  .statCard {
+    background: $color-bg-card;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    box-shadow: $shadow-card;
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+  }
+
+  .statNum {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+    line-height: 1.2;
+  }
+
+  .statUnit {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-left: 4rpx;
+  }
+
+  .statLabel {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .statTag {
+    display: inline-block;
+    font-size: $font-size-xs;
+    padding: 2rpx $spacing-xs;
+    border-radius: $radius-xs;
+    background: rgba($color-success, 0.12);
+    color: $color-success;
+    font-weight: $font-weight-medium;
+    margin-left: auto;
+  }
+}
+
+.tabsWrap {
+  margin: $spacing-lg $page-padding 0;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  padding: 6rpx;
+  display: flex;
+  box-shadow: $shadow-card;
+
+  .tab {
+    flex: 1;
+    height: 68rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-button;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+    transition: all $transition-base;
+
+    &Active {
+      background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+      color: $color-text-white;
+    }
+  }
+
+  .tabCount {
+    margin-left: 4rpx;
+    font-size: $font-size-xs;
+    opacity: 0.85;
+  }
+}
+
+.bidList {
+  padding: $spacing-md $page-padding;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.chainSection {
+  margin: $spacing-lg $page-padding 0;
+
+  .sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+  }
+
+  .sectionTitle {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  .viewAll {
+    font-size: $font-size-sm;
+    color: $color-primary;
+  }
+
+  .chainList {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  .chainItem {
+    background: $color-bg-card;
+    border-radius: $radius-lg;
+    padding: $spacing-md $spacing-lg;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: $shadow-card;
+  }
+
+  .chainInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  .chainIcon {
+    width: 72rpx;
+    height: 72rpx;
+    border-radius: $radius-md;
+    background: linear-gradient(135deg, $color-info 0%, $color-primary-light 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32rpx;
+  }
+
+  .chainDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+  }
+
+  .chainPlate {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .chainDriver {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .chainStatus {
+    padding: $spacing-xs $spacing-md;
+    border-radius: $radius-button;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+
+    &Idle {
+      background: rgba($color-success, 0.12);
+      color: $color-success;
+    }
+
+    &Loading {
+      background: rgba($color-warning, 0.12);
+      color: $color-warning;
+    }
+
+    &Transporting {
+      background: rgba($color-primary, 0.12);
+      color: $color-primary;
+    }
+
+    &Arrived {
+      background: rgba($color-success, 0.12);
+      color: $color-success;
+    }
+  }
+}
+
+.emptyState {
+  padding: $spacing-xl * 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
+
+  .emptyIcon {
+    font-size: 80rpx;
+    opacity: 0.5;
+  }
+
+  .emptyText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}

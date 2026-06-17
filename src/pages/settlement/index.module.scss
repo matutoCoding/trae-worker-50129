@@ -1,0 +1,302 @@
+@use '@/styles/variables.scss' as *;
+
+.settlementPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: 140rpx;
+}
+
+.summaryCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+  border-radius: $radius-xl;
+  padding: $spacing-xl $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 8rpx 32rpx rgba($color-primary, 0.25);
+
+  .summaryLabel {
+    font-size: $font-size-sm;
+    color: rgba($color-text-white, 0.8);
+    margin-bottom: $spacing-xs;
+  }
+
+  .summaryAmount {
+    font-size: 72rpx;
+    font-weight: $font-weight-bold;
+    color: $color-text-white;
+    line-height: 1.2;
+    margin-bottom: $spacing-lg;
+    font-family: 'DIN', monospace;
+  }
+
+  .amountUnit {
+    font-size: $font-size-lg;
+    color: rgba($color-text-white, 0.8);
+    font-weight: $font-weight-normal;
+    margin-left: $spacing-xs;
+  }
+
+  .breakdown {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $spacing-sm;
+    padding-top: $spacing-lg;
+    border-top: 1rpx solid rgba($color-text-white, 0.2);
+  }
+
+  .breakItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+    padding: $spacing-xs;
+  }
+
+  .breakLabel {
+    font-size: $font-size-xs;
+    color: rgba($color-text-white, 0.7);
+  }
+
+  .breakValue {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-text-white;
+  }
+}
+
+.tabs {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  padding: 6rpx;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+
+  .tab {
+    flex: 1;
+    height: 68rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-button;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+    transition: all $transition-base;
+
+    &Active {
+      background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+      color: $color-text-white;
+      box-shadow: 0 2rpx 8rpx rgba($color-primary, 0.25);
+    }
+  }
+
+  .tabCount {
+    margin-left: 4rpx;
+    font-size: $font-size-xs;
+    opacity: 0.85;
+  }
+}
+
+.settlementCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  .cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1rpx solid $color-divider;
+  }
+
+  .boatInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  .boatIcon {
+    width: 72rpx;
+    height: 72rpx;
+    border-radius: $radius-md;
+    background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36rpx;
+  }
+
+  .boatName {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .boatDate {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 4rpx;
+  }
+
+  .statusBadge {
+    padding: $spacing-xs $spacing-md;
+    border-radius: $radius-button;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+
+    &Pending {
+      background: rgba($color-warning, 0.12);
+      color: $color-warning;
+    }
+
+    &Completed {
+      background: rgba($color-success, 0.12);
+      color: $color-success;
+    }
+
+    &Partial {
+      background: rgba($color-primary, 0.12);
+      color: $color-primary;
+    }
+  }
+
+  .itemsList {
+    margin-bottom: $spacing-md;
+  }
+
+  .itemRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-sm 0;
+
+    &:not(:last-child) {
+      border-bottom: 1rpx dashed $color-divider;
+    }
+  }
+
+  .itemInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .itemIcon {
+    width: 48rpx;
+    height: 48rpx;
+    border-radius: 50%;
+    background: $color-tag-bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24rpx;
+  }
+
+  .itemName {
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+    font-weight: $font-weight-medium;
+  }
+
+  .itemWeight {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .itemAmount {
+    text-align: right;
+  }
+
+  .itemPrice {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  .itemTotal {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .feeRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-sm 0;
+    font-size: $font-size-sm;
+
+    .feeLabel {
+      color: $color-text-secondary;
+    }
+
+    .feeValue {
+      color: $color-text-primary;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  .totalRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-md;
+    background: $color-bg-hover;
+    border-radius: $radius-md;
+    margin-top: $spacing-md;
+  }
+
+  .totalLabel {
+    font-size: $font-size-md;
+    color: $color-text-primary;
+    font-weight: $font-weight-semibold;
+  }
+
+  .totalValue {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-price-up;
+  }
+
+  .actions {
+    display: flex;
+    gap: $spacing-md;
+    margin-top: $spacing-lg;
+    padding-top: $spacing-lg;
+    border-top: 1rpx solid $color-divider;
+  }
+
+  .actionBtn {
+    flex: 1;
+    height: $button-height-md;
+    border-radius: $radius-button;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    transition: all $transition-base;
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    &Primary {
+      background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+      color: $color-text-white;
+    }
+
+    &Secondary {
+      background: $color-bg-hover;
+      color: $color-text-secondary;
+    }
+  }
+}

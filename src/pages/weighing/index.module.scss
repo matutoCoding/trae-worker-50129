@@ -1,0 +1,370 @@
+@use '@/styles/variables.scss' as *;
+
+.weighingPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: 140rpx;
+}
+
+.boatSelector {
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  border-radius: $radius-xl;
+  padding: $spacing-lg;
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 4rpx 20rpx rgba($color-primary, 0.2);
+
+  .boatIcon {
+    width: 96rpx;
+    height: 96rpx;
+    border-radius: $radius-lg;
+    background: rgba($color-text-white, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48rpx;
+  }
+
+  .boatInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  .boatName {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text-white;
+  }
+
+  .boatSub {
+    font-size: $font-size-sm;
+    color: rgba($color-text-white, 0.85);
+  }
+
+  .changeBtn {
+    padding: $spacing-sm $spacing-md;
+    background: rgba($color-text-white, 0.2);
+    border-radius: $radius-button;
+    color: $color-text-white;
+    font-size: $font-size-sm;
+  }
+}
+
+.section {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+
+  .sectionTitle {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin-bottom: $spacing-md;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+}
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-md;
+}
+
+.categoryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-md $spacing-xs;
+  border-radius: $radius-md;
+  border: 2rpx solid $color-border;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &Active {
+    border-color: $color-primary;
+    background: rgba($color-primary, 0.06);
+  }
+}
+
+.categoryIcon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: $color-tag-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+}
+
+.categoryName {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md 0;
+
+  &:not(:last-child) {
+    border-bottom: 1rpx solid $color-divider;
+  }
+}
+
+.formLabel {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.formValue {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.weightInputArea {
+  margin-top: $spacing-md;
+  background: linear-gradient(180deg, $color-bg-hover 0%, $color-bg-card 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  border: 2rpx solid $color-border;
+
+  .weightDisplay {
+    text-align: center;
+    padding: $spacing-lg 0;
+  }
+
+  .weightNum {
+    font-size: 96rpx;
+    font-weight: $font-weight-bold;
+    color: $color-primary;
+    font-family: 'DIN', monospace;
+    line-height: 1;
+  }
+
+  .weightUnit {
+    font-size: $font-size-lg;
+    color: $color-text-secondary;
+    margin-left: $spacing-xs;
+  }
+
+  .weightActions {
+    display: flex;
+    gap: $spacing-md;
+    margin-top: $spacing-lg;
+  }
+
+  .weightBtn {
+    flex: 1;
+    height: $button-height-md;
+    border-radius: $radius-button;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    transition: all $transition-base;
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    &Primary {
+      background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+      color: $color-text-white;
+    }
+
+    &Secondary {
+      background: $color-bg-card;
+      color: $color-text-secondary;
+      border: 2rpx solid $color-border;
+    }
+  }
+}
+
+.qualitySelector {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+}
+
+.qualityOption {
+  flex: 1;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  border: 2rpx solid $color-border;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &Active {
+    &A {
+      border-color: $color-success;
+      background: rgba($color-success, 0.08);
+    }
+
+    &B {
+      border-color: $color-warning;
+      background: rgba($color-warning, 0.08);
+    }
+
+    &C {
+      border-color: $color-text-tertiary;
+      background: rgba($color-text-tertiary, 0.08);
+    }
+  }
+}
+
+.qualityLevel {
+  font-size: 48rpx;
+  font-weight: $font-weight-bold;
+}
+
+.qualityDesc {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.recordsList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.recordItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+}
+
+.recordInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.recordIcon {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: $color-tag-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+}
+
+.recordText {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.recordName {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.recordSub {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.recordWeight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4rpx;
+}
+
+.recordWeightNum {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+}
+
+.recordTag {
+  font-size: $font-size-xs;
+  padding: 2rpx $spacing-xs;
+  border-radius: $radius-xs;
+}
+
+.footerBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 16rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  .totalInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+  }
+
+  .totalLabel {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+  }
+
+  .totalValue {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  .submitBtn {
+    height: $button-height-lg;
+    padding: 0 $spacing-xl * 2;
+    border-radius: $radius-button;
+    background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+    color: $color-text-white;
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all $transition-base;
+    box-shadow: 0 4rpx 16rpx rgba($color-primary, 0.3);
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}

@@ -1,0 +1,274 @@
+@use '@/styles/variables.scss' as *;
+
+.inspectionPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: 120rpx;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+
+  .statCard {
+    background: $color-bg-card;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    box-shadow: $shadow-card;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  .statNum {
+    font-size: $font-size-xxl;
+    font-weight: $font-weight-bold;
+  }
+
+  .statLabel {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .passRate {
+    background: linear-gradient(135deg, rgba($color-success, 0.1) 0%, rgba($color-success, 0.05) 100%);
+    .statNum { color: $color-success; }
+  }
+
+  .total {
+    background: linear-gradient(135deg, rgba($color-primary, 0.1) 0%, rgba($color-primary, 0.05) 100%);
+    .statNum { color: $color-primary; }
+  }
+
+  .pending {
+    background: linear-gradient(135deg, rgba($color-warning, 0.1) 0%, rgba($color-warning, 0.05) 100%);
+    .statNum { color: $color-warning; }
+  }
+}
+
+.section {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+
+  .sectionTitle {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin-bottom: $spacing-md;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .titleIcon {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+    }
+
+    .action {
+      font-size: $font-size-sm;
+      color: $color-primary;
+      font-weight: $font-weight-normal;
+    }
+  }
+}
+
+.recordCard {
+  border: 2rpx solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  transition: all $transition-base;
+
+  &:not(:last-child) {
+    margin-bottom: $spacing-md;
+  }
+
+  &:active {
+    border-color: $color-primary;
+    transform: scale(0.99);
+  }
+
+  .cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1rpx solid $color-divider;
+  }
+
+  .sampleInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  .sampleIcon {
+    width: 72rpx;
+    height: 72rpx;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36rpx;
+  }
+
+  .sampleName {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .sampleSub {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 4rpx;
+  }
+
+  .resultBadge {
+    padding: $spacing-xs $spacing-md;
+    border-radius: $radius-button;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+
+    &Pass {
+      background: rgba($color-success, 0.12);
+      color: $color-success;
+    }
+
+    &Pending {
+      background: rgba($color-warning, 0.12);
+      color: $color-warning;
+    }
+
+    &Fail {
+      background: rgba($color-error, 0.12);
+      color: $color-error;
+    }
+  }
+
+  .qualityLevel {
+    display: inline-flex;
+    padding: 4rpx 12rpx;
+    border-radius: $radius-xs;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    margin-left: 8rpx;
+
+    &A {
+      background: rgba($color-success, 0.15);
+      color: $color-success;
+    }
+
+    &B {
+      background: rgba($color-warning, 0.15);
+      color: $color-warning;
+    }
+
+    &C {
+      background: rgba($color-text-tertiary, 0.15);
+      color: $color-text-tertiary;
+    }
+  }
+
+  .checkItems {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  .checkRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-sm $spacing-md;
+    background: $color-bg-hover;
+    border-radius: $radius-sm;
+    font-size: $font-size-sm;
+  }
+
+  .checkName {
+    color: $color-text-secondary;
+    flex: 1;
+  }
+
+  .checkResult {
+    font-weight: $font-weight-medium;
+    margin-right: $spacing-md;
+  }
+
+  .checkStandard {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .cardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1rpx solid $color-divider;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .footerActions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  .actionBtn {
+    padding: $spacing-xs $spacing-md;
+    border-radius: $radius-button;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    background: rgba($color-primary, 0.1);
+    color: $color-primary;
+    transition: all $transition-base;
+
+    &:active {
+      background: rgba($color-primary, 0.2);
+    }
+  }
+}
+
+.samplingBtn {
+  position: fixed;
+  right: $spacing-lg;
+  bottom: calc(#{$spacing-xl * 2} + env(safe-area-inset-bottom));
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba($color-primary, 0.4);
+  transition: all $transition-base;
+  z-index: 100;
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  .btnIcon {
+    font-size: 40rpx;
+    line-height: 1;
+  }
+
+  .btnText {
+    font-size: $font-size-xs;
+    color: $color-text-white;
+    font-weight: $font-weight-medium;
+    margin-top: 4rpx;
+  }
+}
