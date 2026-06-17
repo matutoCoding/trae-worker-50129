@@ -58,12 +58,12 @@ const QueueCard: React.FC<QueueCardProps> = ({ data, onAssign }) => {
           <Text className={styles.infoValue}>{data.boatNumber}</Text>
         </View>
         <View className={styles.infoBlock}>
-          <Text className={styles.infoLabel}>等候时间</Text>
-          <Text className={styles.infoValue}>{data.waitTime}</Text>
+          <Text className={styles.infoLabel}>{data.status === 'docked' ? '靠泊泊位' : '拟泊位置'}</Text>
+          <Text className={styles.infoValue}>{data.expectedBerth}</Text>
         </View>
         <View className={styles.infoBlock}>
-          <Text className={styles.infoLabel}>拟泊位置</Text>
-          <Text className={styles.infoValue}>{data.expectedBerth}</Text>
+          <Text className={styles.infoLabel}>{data.status === 'docked' ? '靠泊时间' : '等候时间'}</Text>
+          <Text className={styles.infoValue}>{data.status === 'docked' ? (data.dockedTime || data.applyTime).slice(5, 16) : data.waitTime}</Text>
         </View>
       </View>
 

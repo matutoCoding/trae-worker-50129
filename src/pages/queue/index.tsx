@@ -14,6 +14,7 @@ const QueuePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('all');
   const [queue, setQueue] = useState<QueueItem[]>(mockQueue);
   const [berthInfo, setBerthInfo] = useState(initialBerthInfo);
+  const [zoneFilter, setZoneFilter] = useState<string>('全部区域');
 
   usePullDownRefresh(() => {
     console.log('[QueuePage] 开始刷新');
@@ -29,17 +30,28 @@ const QueuePage: React.FC = () => {
       Taro.showToast({ title: '该船已靠泊', icon: 'none' });
       return;
     }
-    setQueue(prev => prev.map(q =>
-      q.id === item.id ? { ...q, status: 'docked' as const } : q
-    ));
     const zoneKey = item.expectedBerth[0] + '区';
+    const zoneAvailable = berthInfo.find(b => b.zone === zoneKey)?.available || 0;
+    if (zoneAvailable <= 0) {
+      Taro.showModal({
+        title: '泊位已满',
+        content: `${zoneKey}暂无空闲泊位，请稍后重新安排或选择其他区域。`,
+        showCancel: false
+      });
+      return;
+    }
+    const now = new Date();
+    const dockedTimeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    setQueue(prev => prev.map(q =>
+      q.id === item.id ? { ...q, status: 'docked' as const, dockedTime: dockedTimeStr } : q
+    ));
     setBerthInfo(prev => prev.map(b => {
       if (b.zone === zoneKey && b.available > 0) {
         return { ...b, occupied: b.occupied + 1, available: b.available - 1 };
       }
       return b;
     }));
-  }, []);
+  }, [berthInfo]);
 
   const tabs: { key: TabType; label: string }[] = [
     { key: 'all', label: '全部' },
@@ -48,11 +60,29 @@ const QueuePage: React.FC = () => {
     { key: 'docked', label: '已靠泊' }
   ];
 
+  const zoneOptions = useMemo(() => {
+    const zones = new Set(queue.map(q => q.expectedBerth[0] + '区'));
+    return ['全部区域', ...Array.from(zones)];
+  }, [queue]);
+
   const filteredQueue = useMemo(() => {
-    return activeTab === 'all'
+    let result = activeTab === 'all'
       ? queue
       : queue.filter(q => q.status === activeTab);
-  }, [activeTab, queue]);
+    if (zoneFilter !== '全部区域') {
+      result = result.filter(q => (q.expectedBerth[0] + '区') === zoneFilter);
+    }
+    return result;
+  }, [activeTab, queue, zoneFilter]);
+
+  const handleZoneFilter = () => {
+    Taro.showActionSheet({
+      itemList: zoneOptions
+    }).then(res => {
+      setZoneFilter(zoneOptions[res.tapIndex]);
+      console.log('[QueuePage] 筛选区域:', zoneOptions[res.tapIndex]);
+    }).catch(() => {});
+  };
 
   const totalOccupied = useMemo(() => berthInfo.reduce((s, b) => s + b.occupied, 0), [berthInfo]);
   const totalAvailable = useMemo(() => berthInfo.reduce((s, b) => s + b.available, 0), [berthInfo]);
@@ -129,6 +159,17 @@ const QueuePage: React.FC = () => {
             );
           })}
         </View>
+      </View>
+
+      <View className={styles.filterBar}>
+        <View className={styles.filterItem} onClick={handleZoneFilter}>
+          <Text style={{ color: '#8AA5B3', fontSize: '24rpx' }}>泊位区域:</Text>
+          <Text style={{ color: '#0077B6', fontSize: '26rpx', fontWeight: 500, marginLeft: '8rpx' }}>{zoneFilter}</Text>
+          <Text style={{ color: '#8AA5B3', fontSize: '20rpx', marginLeft: '8rpx' }}>▼</Text>
+        </View>
+        <Text style={{ color: '#8AA5B3', fontSize: '24rpx' }}>
+          共 {filteredQueue.length} 条
+        </Text>
       </View>
 
       <View className={styles.queueList}>

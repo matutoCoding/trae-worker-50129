@@ -31,7 +31,8 @@ const TransactionsPage: React.FC = () => {
   };
 
   const isDateInRange = (dateStr: string, range: string): boolean => {
-    const date = new Date(dateStr);
+    const dateOnly = dateStr.slice(0, 10);
+    const date = new Date(dateOnly);
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     
@@ -178,13 +179,55 @@ const TransactionsPage: React.FC = () => {
 
   const handleViewDetail = (t: Transaction) => {
     const typeText = t.type === 'income' ? '收入' : t.type === 'expense' ? '支出' : '退款';
+    const directionText = t.type === 'expense' ? '资金流出 ↓' : '资金流入 ↑';
+    const directionClass = t.type === 'expense' ? '支出（红色）' : '收入（绿色）';
+    const buyerOrSeller = t.description.includes('欠款') || t.description.includes('货款') ? t.description.split('-')[0] : t.relatedBoat || '无';
+    const bizType = getTransactionType(t);
+    const remarkMap: Record<string, string> = {
+      '退款': '预付款原路退回，3个工作日内到账',
+      '渔获结算': '包含渔获成交款和服务费结算',
+      '油补发放': '按季度燃油补贴，已完成审核',
+      '预付款': '买家预付保证金，用于后续竞价',
+      '服务收费': '港口泊位、装卸等服务费用',
+      '其他': '欠款还款或其他资金往来'
+    };
+    const statusFlow = t.status === 'pending' 
+      ? '待确认 → 处理中 → 成功' 
+      : t.status === 'success' 
+        ? '已确认 ✓ → 处理完成 ✓ → 成功 ✓' 
+        : '待确认 → 处理中 → 失败 ✗';
+    
+    const detailContent = `━━━ 交易核对小票 ━━━
+
+📌 交易单号: ${t.id}
+📋 业务类型: ${bizType}
+💰 资金方向: ${directionText}
+┌────────────────────
+  金额: ${getAmountPrefix(t.type)}${formatCurrency(t.amount)}
+└────────────────────
+
+🔗 关联信息:
+  ${t.relatedBoat ? `渔船: ${t.relatedBoat}` : ''}
+  ${t.relatedCategory ? `品类: ${t.relatedCategory}` : ''}
+  ${buyerOrSeller !== '无' ? `${bizType === '退款' || bizType === '预付款' ? '买家' : '关联方'}: ${buyerOrSeller}` : ''}
+  操作人: ${t.operator}
+
+⏰ 交易时间: ${t.time}
+📊 流转状态: ${getStatusText(t.status, 'transaction')}
+  ${statusFlow}
+
+📝 备注: ${remarkMap[bizType] || t.description}
+
+━━━━━━━━━━━━━━━━━━━`;
+
     Taro.showModal({
-      title: '交易详情',
-      content: `交易单号: ${t.id}\n\n交易类型: ${typeText}\n交易金额: ${formatCurrency(t.amount)}\n说明: ${t.description}\n关联渔船: ${t.relatedBoat || '无'}\n关联品类: ${t.relatedCategory || '无'}\n操作人: ${t.operator}\n交易时间: ${t.time}\n交易状态: ${getStatusText(t.status, 'transaction')}`,
+      title: `${typeText} · ${getStatusText(t.status, 'transaction')}`,
+      content: detailContent,
       showCancel: false,
-      confirmText: '知道了'
+      confirmText: '核对无误',
+      confirmColor: '#0077B6'
     });
-    console.log('[Transactions] 查看详情:', t.id, '状态:', t.status);
+    console.log('[Transactions] 查看详情:', t.id, '类型:', bizType, '状态:', t.status);
   };
 
   return (

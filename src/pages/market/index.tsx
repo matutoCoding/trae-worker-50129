@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import classnames from 'classnames';
@@ -78,6 +78,19 @@ const MarketPage: React.FC = () => {
   const getAmountPrefix = (type: Transaction['type']) => {
     return type === 'expense' ? '-' : '+';
   };
+
+  const pendingTransactions = useMemo(() => {
+    return mockTransactions.filter(t => t.status === 'pending');
+  }, []);
+
+  const recentTransactions = useMemo(() => {
+    const pending = pendingTransactions;
+    const others = mockTransactions
+      .filter(t => t.status !== 'pending')
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+    const combined = [...pending, ...others];
+    return combined.slice(0, 5);
+  }, [pendingTransactions]);
 
   const today = new Date().toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
 
@@ -175,6 +188,47 @@ const MarketPage: React.FC = () => {
         </View>
       </View>
 
+      {pendingTransactions.length > 0 && (
+        <View className={styles.pendingSection}>
+          <View className={styles.sectionHeader}>
+            <Text className={styles.sectionTitle}>
+              <Text>⏳</Text>
+              待处理流水
+            </Text>
+            <Text className={styles.viewAll} onClick={() => handleEntry('/pages/transactions/index')}>
+              查看全部 >
+            </Text>
+          </View>
+          <View className={styles.transList}>
+            {pendingTransactions.map(trans => (
+              <View
+                key={trans.id}
+                className={styles.transItem}
+                onClick={() => handleEntry('/pages/transactions/index')}
+              >
+                <View className={styles.transInfo}>
+                  <View className={classnames(styles.transIcon, getTransIconClass(trans.type))}>
+                    <Text>{getTransIcon(trans.type)}</Text>
+                  </View>
+                  <View className={styles.transText}>
+                    <Text className={styles.transDesc}>{trans.description}</Text>
+                    <Text className={styles.transTime}>{trans.time.slice(5, 16)} · {trans.operator}</Text>
+                  </View>
+                </View>
+                <View className={styles.transRight}>
+                  <Text className={classnames(styles.transAmount, getTransAmountClass(trans.type))}>
+                    {getAmountPrefix(trans.type)}{formatCurrency(trans.amount)}
+                  </Text>
+                  <View className={classnames(styles.statusTag, getStatusClass(trans.status))}>
+                    <Text>{getStatusText(trans.status, 'transaction')}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+
       <View className={styles.transactionsSection}>
         <View className={styles.sectionHeader}>
           <Text className={styles.sectionTitle}>
@@ -186,7 +240,7 @@ const MarketPage: React.FC = () => {
           </Text>
         </View>
         <View className={styles.transList}>
-          {[...mockTransactions].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 5).map(trans => (
+          {recentTransactions.map(trans => (
             <View
               key={trans.id}
               className={styles.transItem}

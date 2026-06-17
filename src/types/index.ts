@@ -23,6 +23,7 @@ export interface QueueItem {
   applyTime: string;
   expectedBerth: string;
   waitTime: string;
+  dockedTime?: string;
 }
 
 export interface FishCategory {

@@ -117,6 +117,26 @@
   }
 }
 
+.filterBar {
+  padding: $spacing-md $page-padding;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .filterItem {
+    display: flex;
+    align-items: center;
+    padding: $spacing-sm $spacing-md;
+    background: $color-bg-card;
+    border-radius: $radius-md;
+    box-shadow: $shadow-card;
+
+    &:active {
+      opacity: 0.8;
+    }
+  }
+}
+
 .queueList {
   padding: $spacing-md $page-padding;
   display: flex;
