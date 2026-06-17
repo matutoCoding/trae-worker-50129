@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
-import { mockFishCategories, mockBoats, mockWeighingRecords } from '@/data/boats';
+import { mockFishCategories, mockBoats } from '@/data/boats';
 import { mockWeighingRecords as tradesRecords } from '@/data/trades';
+import { getRandomId, formatTime } from '@/utils';
 import type { FishCategory, WeighingRecord } from '@/types';
 
 type QualityLevel = 'A' | 'B' | 'C';
@@ -14,13 +15,23 @@ const WeighingPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<FishCategory>(mockFishCategories[0]);
   const [quality, setQuality] = useState<QualityLevel>('A');
   const [weight, setWeight] = useState<number>(0);
-  const [records] = useState<WeighingRecord[]>(tradesRecords.filter(r => r.boatId === selectedBoat.id));
+  const [records, setRecords] = useState<WeighingRecord[]>(() => {
+    const initialRecords = tradesRecords.filter(r => r.boatId === selectedBoat.id);
+    console.log('[Weighing] 初始化记录:', initialRecords.length, '条');
+    return initialRecords;
+  });
+  const [batchNo] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-A-${getRandomId()}`;
+  });
 
   const handleChangeBoat = () => {
     Taro.showActionSheet({
       itemList: mockBoats.map(b => `${b.name} - ${b.number}`)
     }).then(res => {
-      console.log('[Weighing] 选择船只:', res.tapIndex);
+      const newBoat = mockBoats[res.tapIndex];
+      console.log('[Weighing] 选择船只:', newBoat.name);
+      Taro.showToast({ title: `已切换到${newBoat.name}`, icon: 'none' });
     }).catch(err => {
       console.error('[Weighing] 选择船只失败:', err);
     });
@@ -30,7 +41,7 @@ const WeighingPage: React.FC = () => {
     const newWeight = Math.floor(Math.random() * 2000) + 500;
     setWeight(newWeight);
     Taro.vibrateShort({ type: 'medium' });
-    console.log('[Weighing] 过磅重量:', newWeight);
+    console.log('[Weighing] 过磅重量:', newWeight, 'kg');
   };
 
   const handleAddRecord = () => {
@@ -38,8 +49,30 @@ const WeighingPage: React.FC = () => {
       Taro.showToast({ title: '请先过磅称重', icon: 'none' });
       return;
     }
+
+    const now = new Date();
+    const newRecord: WeighingRecord = {
+      id: `W${now.getTime()}`,
+      boatId: selectedBoat.id,
+      boatName: selectedBoat.name,
+      categoryId: selectedCategory.id,
+      categoryName: selectedCategory.name,
+      weight: weight,
+      unit: 'kg',
+      quality: quality,
+      weighTime: formatTime(now),
+      operator: '操作员-王磊',
+      temperature: -18,
+      batchNo: `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${quality}-${getRandomId()}`
+    };
+
+    setRecords(prev => {
+      const updated = [newRecord, ...prev];
+      console.log('[Weighing] 添加新记录:', newRecord.categoryName, newRecord.weight, 'kg, 当前共', updated.length, '条');
+      return updated;
+    });
+
     Taro.showToast({ title: '已添加记录', icon: 'success' });
-    console.log('[Weighing] 添加记录:', { category: selectedCategory.name, weight, quality });
     setWeight(0);
   };
 
@@ -48,13 +81,14 @@ const WeighingPage: React.FC = () => {
       Taro.showToast({ title: '暂无过磅记录', icon: 'none' });
       return;
     }
+    const totalW = records.reduce((s, r) => s + r.weight, 0);
     Taro.showModal({
       title: '确认生成单据',
-      content: `共 ${records.length} 条记录，合计 ${records.reduce((s, r) => s + r.weight, 0)} kg，是否生成过秤单据？`,
+      content: `共 ${records.length} 条记录，合计 ${totalW} kg，是否生成过秤单据？`,
       success: (res) => {
         if (res.confirm) {
           Taro.showToast({ title: '单据已生成', icon: 'success' });
-          console.log('[Weighing] 生成单据成功');
+          console.log('[Weighing] 生成单据成功，共', records.length, '条记录，合计', totalW, 'kg');
           setTimeout(() => {
             Taro.navigateBack();
           }, 1500);
@@ -63,7 +97,9 @@ const WeighingPage: React.FC = () => {
     });
   };
 
-  const totalWeight = records.reduce((s, r) => s + r.weight, 0);
+  const totalWeight = useMemo(() => {
+    return records.reduce((s, r) => s + r.weight, 0);
+  }, [records]);
 
   const qualityOptions: { level: QualityLevel; desc: string; color: string }[] = [
     { level: 'A', desc: '优质品', color: '#06D6A0' },
@@ -155,7 +191,7 @@ const WeighingPage: React.FC = () => {
         <View className={styles.formRow}>
           <Text className={styles.formLabel}>批次号</Text>
           <Text className={styles.formValue}>
-            <Text>{`${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${quality}-${String(Math.floor(Math.random() * 900 + 100)}`}</Text>
+            <Text>{batchNo}</Text>
           </Text>
         </View>
         <View className={styles.formRow}>

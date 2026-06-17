@@ -67,7 +67,7 @@ const MarketPage: React.FC = () => {
   };
 
   const getAmountPrefix = (type: Transaction['type']) => {
-    return type === 'income' ? '+' : '-';
+    return type === 'expense' ? '-' : '+';
   };
 
   const today = new Date().toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });

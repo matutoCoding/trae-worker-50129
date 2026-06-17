@@ -8,9 +8,10 @@ import { getStatusText } from '@/utils';
 
 interface QueueCardProps {
   data: QueueItem;
+  onAssign?: (data: QueueItem) => void;
 }
 
-const QueueCard: React.FC<QueueCardProps> = ({ data }) => {
+const QueueCard: React.FC<QueueCardProps> = ({ data, onAssign }) => {
   const statusClass = classnames(
     styles.status,
     data.status === 'calling' && styles.statusCalling,
@@ -32,6 +33,7 @@ const QueueCard: React.FC<QueueCardProps> = ({ data }) => {
         if (res.confirm) {
           Taro.showToast({ title: '泊位已分配', icon: 'success' });
           console.log('[QueueCard] 分配泊位:', data.expectedBerth);
+          onAssign?.(data);
         }
       }
     });

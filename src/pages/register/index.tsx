@@ -10,7 +10,9 @@ import type { OilSubsidy } from '@/types';
 type TabType = 'boat' | 'subsidy';
 
 const RegisterPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('boat');
+  const router = Taro.useRouter();
+  const initialTab = router.params?.tab === 'subsidy' ? 'subsidy' : 'boat';
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
 
   const getSubsidyStatusClass = (status: OilSubsidy['status']) => {
     const map: Record<string, string> = {

@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
 import QueueCard from '@/components/QueueCard';
-import { mockQueue, berthInfo } from '@/data/queue';
+import { mockQueue, berthInfo as initialBerthInfo } from '@/data/queue';
 import { getStatusText } from '@/utils';
+import type { QueueItem } from '@/types';
 
 type TabType = 'all' | 'waiting' | 'calling' | 'docked';
 
 const QueuePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('all');
+  const [queue, setQueue] = useState<QueueItem[]>(mockQueue);
+  const [berthInfo, setBerthInfo] = useState(initialBerthInfo);
 
   usePullDownRefresh(() => {
     console.log('[QueuePage] 开始刷新');
@@ -21,6 +24,19 @@ const QueuePage: React.FC = () => {
     }, 1500);
   });
 
+  const handleAssign = useCallback((item: QueueItem) => {
+    setQueue(prev => prev.map(q =>
+      q.id === item.id ? { ...q, status: 'docked' as const } : q
+    ));
+    const zoneKey = item.expectedBerth[0] + '区';
+    setBerthInfo(prev => prev.map(b => {
+      if (b.zone === zoneKey && b.available > 0) {
+        return { ...b, occupied: b.occupied + 1, available: b.available - 1 };
+      }
+      return b;
+    }));
+  }, []);
+
   const tabs: { key: TabType; label: string }[] = [
     { key: 'all', label: '全部' },
     { key: 'calling', label: '叫号中' },
@@ -28,14 +44,16 @@ const QueuePage: React.FC = () => {
     { key: 'docked', label: '已靠泊' }
   ];
 
-  const filteredQueue = activeTab === 'all'
-    ? mockQueue
-    : mockQueue.filter(q => q.status === activeTab);
+  const filteredQueue = useMemo(() => {
+    return activeTab === 'all'
+      ? queue
+      : queue.filter(q => q.status === activeTab);
+  }, [activeTab, queue]);
 
-  const totalOccupied = berthInfo.reduce((s, b) => s + b.occupied, 0);
-  const totalAvailable = berthInfo.reduce((s, b) => s + b.available, 0);
-  const waitingCount = mockQueue.filter(q => q.status === 'waiting').length;
-  const callingCount = mockQueue.filter(q => q.status === 'calling').length;
+  const totalOccupied = useMemo(() => berthInfo.reduce((s, b) => s + b.occupied, 0), [berthInfo]);
+  const totalAvailable = useMemo(() => berthInfo.reduce((s, b) => s + b.available, 0), [berthInfo]);
+  const waitingCount = useMemo(() => queue.filter(q => q.status === 'waiting').length, [queue]);
+  const callingCount = useMemo(() => queue.filter(q => q.status === 'calling').length, [queue]);
 
   return (
     <View className={styles.queuePage}>
@@ -90,8 +108,8 @@ const QueuePage: React.FC = () => {
         <View className={styles.tabs}>
           {tabs.map(tab => {
             const count = tab.key === 'all'
-              ? mockQueue.length
-              : mockQueue.filter(q => q.status === tab.key).length;
+              ? queue.length
+              : queue.filter(q => q.status === tab.key).length;
             return (
               <View
                 key={tab.key}
@@ -112,7 +130,7 @@ const QueuePage: React.FC = () => {
       <View className={styles.queueList}>
         {filteredQueue.length > 0 ? (
           filteredQueue.map(item => (
-            <QueueCard key={item.id} data={item} />
+            <QueueCard key={item.id} data={item} onAssign={handleAssign} />
           ))
         ) : (
           <View className={styles.emptyState}>

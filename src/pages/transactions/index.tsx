@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
@@ -20,12 +20,31 @@ const TransactionsPage: React.FC = () => {
     { key: 'expense', label: '支出' }
   ];
 
-  const filteredTransactions = activeTab === 'all'
-    ? mockTransactions
-    : mockTransactions.filter(t => t.type === activeTab || (activeTab === 'expense' && t.type === 'refund'));
+  const filteredTransactions = useMemo(() => {
+    let result = [...mockTransactions];
+    if (activeTab !== 'all') {
+      if (activeTab === 'income') {
+        result = result.filter(t => t.type === 'income' || t.type === 'refund');
+      } else {
+        result = result.filter(t => t.type === 'expense');
+      }
+    }
+    console.log('[Transactions] 筛选后数据:', result.length, '条, tab:', activeTab);
+    return result;
+  }, [activeTab]);
 
-  const totalIncome = mockTransactions.filter(t => t.type === 'income' && t.status === 'success').reduce((s, t) => s + t.amount, 0);
-  const totalExpense = mockTransactions.filter(t => (t.type === 'expense' || t.type === 'refund') && t.status === 'success').reduce((s, t) => s + t.amount, 0);
+  const totalIncome = useMemo(() => {
+    return mockTransactions
+      .filter(t => (t.type === 'income' || t.type === 'refund') && t.status === 'success')
+      .reduce((s, t) => s + t.amount, 0);
+  }, []);
+
+  const totalExpense = useMemo(() => {
+    return mockTransactions
+      .filter(t => t.type === 'expense' && t.status === 'success')
+      .reduce((s, t) => s + t.amount, 0);
+  }, []);
+
   const netProfit = totalIncome - totalExpense;
 
   const getIconClass = (type: Transaction['type']) => {
@@ -41,7 +60,7 @@ const TransactionsPage: React.FC = () => {
     const map: Record<string, string> = {
       income: styles.transAmountIncome,
       expense: styles.transAmountExpense,
-      refund: styles.transAmountRefund
+      refund: styles.transAmountIncome
     };
     return map[type];
   };
@@ -65,16 +84,19 @@ const TransactionsPage: React.FC = () => {
   };
 
   const getAmountPrefix = (type: Transaction['type']) => {
-    return type === 'income' ? '+' : '-';
+    return type === 'expense' ? '-' : '+';
   };
 
   // 按日期分组
-  const groupedByDate: Record<string, Transaction[]> = {};
-  filteredTransactions.forEach(t => {
-    const date = t.time.slice(0, 10);
-    if (!groupedByDate[date]) groupedByDate[date] = [];
-    groupedByDate[date].push(t);
-  });
+  const groupedByDate = useMemo(() => {
+    const groups: Record<string, Transaction[]> = {};
+    filteredTransactions.forEach(t => {
+      const date = t.time.slice(0, 10);
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(t);
+    });
+    return groups;
+  }, [filteredTransactions]);
 
   const handleTypeFilter = () => {
     Taro.showActionSheet({
@@ -105,13 +127,14 @@ const TransactionsPage: React.FC = () => {
   };
 
   const handleViewDetail = (t: Transaction) => {
+    const typeText = t.type === 'income' ? '收入' : t.type === 'expense' ? '支出' : '退款';
     Taro.showModal({
       title: '交易详情',
-      content: `交易单号: ${t.id}\n\n交易类型: ${t.type === 'income' ? '收入' : t.type === 'expense' ? '支出' : '退款'}\n交易金额: ${formatCurrency(t.amount)}\n说明: ${t.description}\n关联渔船: ${t.relatedBoat || '无'}\n关联品类: ${t.relatedCategory || '无'}\n操作人: ${t.operator}\n交易时间: ${t.time}\n交易状态: ${getStatusText(t.status, 'transaction')}`,
+      content: `交易单号: ${t.id}\n\n交易类型: ${typeText}\n交易金额: ${formatCurrency(t.amount)}\n说明: ${t.description}\n关联渔船: ${t.relatedBoat || '无'}\n关联品类: ${t.relatedCategory || '无'}\n操作人: ${t.operator}\n交易时间: ${t.time}\n交易状态: ${getStatusText(t.status, 'transaction')}`,
       showCancel: false,
       confirmText: '知道了'
     });
-    console.log('[Transactions] 查看详情:', t.id);
+    console.log('[Transactions] 查看详情:', t.id, '状态:', t.status);
   };
 
   return (
@@ -150,15 +173,22 @@ const TransactionsPage: React.FC = () => {
       </View>
 
       <View className={styles.tabs}>
-        {tabs.map(tab => (
-          <View
-            key={tab.key}
-            className={classnames(styles.tab, activeTab === tab.key && styles.tabActive)}
-            onClick={() => setActiveTab(tab.key)}
-          >
-            <Text>{tab.label}</Text>
-          </View>
-        ))}
+        {tabs.map(tab => {
+          const count = tab.key === 'all'
+            ? mockTransactions.length
+            : tab.key === 'income'
+              ? mockTransactions.filter(t => t.type === 'income' || t.type === 'refund').length
+              : mockTransactions.filter(t => t.type === 'expense').length;
+          return (
+            <View
+              key={tab.key}
+              className={classnames(styles.tab, activeTab === tab.key && styles.tabActive)}
+              onClick={() => setActiveTab(tab.key)}
+            >
+              <Text>{tab.label}({count})</Text>
+            </View>
+          );
+        })}
       </View>
 
       <View className={styles.statsCard}>
@@ -178,7 +208,9 @@ const TransactionsPage: React.FC = () => {
         </View>
         <View className={styles.statItem}>
           <View style={{ display: 'flex', alignItems: 'baseline' }}>
-            <Text className={styles.statNum}>¥{(netProfit / 10000).toFixed(1)}</Text>
+            <Text className={styles.statNum} style={{ color: netProfit >= 0 ? '#06D6A0' : '#EF476F' }}>
+              {netProfit >= 0 ? '+' : ''}¥{(netProfit / 10000).toFixed(1)}
+            </Text>
             <Text className={styles.statUnit}>万</Text>
           </View>
           <Text className={styles.statLabel}>净收入</Text>
@@ -187,15 +219,15 @@ const TransactionsPage: React.FC = () => {
 
       {Object.entries(groupedByDate).length > 0 ? (
         Object.entries(groupedByDate).map(([date, list]) => {
-          const dayIncome = list.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-          const dayExpense = list.filter(t => t.type !== 'income').reduce((s, t) => s + t.amount, 0);
+          const dayIncome = list.filter(t => t.type === 'income' || t.type === 'refund').reduce((s, t) => s + t.amount, 0);
+          const dayExpense = list.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
           return (
             <View key={date} className={styles.dateGroup}>
               <View className={styles.dateHeader}>
                 <Text className={styles.dateText}>📅 {date}</Text>
                 <View>
                   <Text className={styles.incomeSum}>收 +¥{dayIncome.toLocaleString()}</Text>
-                  <Text className={styles.expenseSum}>支 -¥{dayExpense.toLocaleString()}</Text>
+                  <Text className={styles.expenseSum}> 支 -¥{dayExpense.toLocaleString()}</Text>
                 </View>
               </View>
               {list.map(t => (
