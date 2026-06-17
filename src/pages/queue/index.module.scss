@@ -137,6 +137,145 @@
   }
 }
 
+.viewSwitch {
+  margin: $spacing-md $page-padding;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  padding: 6rpx;
+  display: flex;
+  box-shadow: $shadow-card;
+
+  .viewSwitchTab {
+    flex: 1;
+    height: 68rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-button;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+    transition: all $transition-base;
+
+    &Active {
+      background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+      color: $color-text-white;
+    }
+  }
+}
+
+.berthBoard {
+  padding: $spacing-md $page-padding;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  .berthZone {
+    background: $color-bg-card;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    box-shadow: $shadow-card;
+  }
+
+  .berthZoneHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-sm;
+    border-bottom: 1rpx solid $color-border;
+  }
+
+  .berthZoneTitle {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .berthZoneStats {
+    display: flex;
+    align-items: center;
+    gap: 4rpx;
+  }
+
+  .berthStatOccupied {
+    color: $color-error;
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-md;
+  }
+
+  .berthStatDivider {
+    color: $color-text-tertiary;
+    font-size: $font-size-md;
+  }
+
+  .berthStatTotal {
+    color: $color-text-secondary;
+    font-size: $font-size-md;
+  }
+
+  .berthGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $spacing-sm;
+  }
+
+  .berthCell {
+    aspect-ratio: 1;
+    border-radius: $radius-md;
+    padding: $spacing-xs;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4rpx;
+    transition: all $transition-base;
+
+    &Occupied {
+      background: linear-gradient(135deg, rgba($color-error, 0.15) 0%, rgba($color-error, 0.08) 100%);
+      border: 2rpx solid rgba($color-error, 0.3);
+    }
+
+    &Available {
+      background: linear-gradient(135deg, rgba($color-success, 0.15) 0%, rgba($color-success, 0.08) 100%);
+      border: 2rpx solid rgba($color-success, 0.3);
+    }
+  }
+
+  .berthNumber {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  .berthBoatInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rpx;
+    width: 100%;
+  }
+
+  .berthBoatName {
+    font-size: 18rpx;
+    font-weight: $font-weight-medium;
+    color: $color-error;
+    text-align: center;
+    width: 100%;
+  }
+
+  .berthDockedTime {
+    font-size: 16rpx;
+    color: $color-text-tertiary;
+  }
+
+  .berthAvailableText {
+    font-size: 18rpx;
+    color: $color-success;
+    font-weight: $font-weight-medium;
+  }
+}
+
 .queueList {
   padding: $spacing-md $page-padding;
   display: flex;

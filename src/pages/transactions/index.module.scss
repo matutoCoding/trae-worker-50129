@@ -285,3 +285,139 @@
     color: $color-text-tertiary;
   }
 }
+
+.viewTab {
+  flex: 1;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  background: $color-bg-hover;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+
+  &Active {
+    background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+    color: $color-text-white;
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.summaryView {
+  margin: $spacing-md $page-padding;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+
+  .summaryHeader {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 40rpx;
+    align-items: center;
+    padding: $spacing-md;
+    background: linear-gradient(135deg, rgba($color-primary, 0.08) 0%, rgba($color-primary, 0.02) 100%);
+    border-bottom: 1rpx solid $color-border;
+
+    .summaryColHeader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:first-child {
+        justify-content: flex-start;
+      }
+    }
+
+    .summaryColTitle {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $color-primary;
+    }
+  }
+
+  .summaryRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 40rpx;
+    align-items: center;
+    padding: $spacing-md;
+    border-bottom: 1rpx solid $color-border;
+    transition: background $transition-base;
+
+    &:active {
+      background: $color-bg-hover;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .summaryCol {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4rpx;
+
+    &:first-child {
+      align-items: flex-start;
+    }
+  }
+
+  .summaryKey {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .summaryCount {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .summaryAmount {
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+
+    &.income {
+      color: $color-success;
+    }
+
+    &.expense {
+      color: $color-error;
+    }
+  }
+
+  .expandArrow {
+    font-size: 20rpx;
+    color: $color-text-tertiary;
+    text-align: center;
+  }
+
+  .summaryDetail {
+    background: $color-bg-hover;
+    padding: $spacing-sm $spacing-md;
+    border-bottom: 1rpx solid $color-border;
+
+    .summaryDetailItem {
+      background: $color-bg-card;
+      border-radius: $radius-md;
+      margin-bottom: $spacing-sm;
+      padding: $spacing-md;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      &:active {
+        background: $color-bg-hover;
+      }
+    }
+  }
+}

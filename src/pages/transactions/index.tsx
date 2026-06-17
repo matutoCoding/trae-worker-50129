@@ -8,11 +8,15 @@ import { getStatusText, formatCurrency, formatDate } from '@/utils';
 import type { Transaction } from '@/types';
 
 type TabType = 'all' | 'income' | 'expense';
+type ViewMode = 'list' | 'summary';
 
 const TransactionsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('all');
   const [typeFilter, setTypeFilter] = useState('全部类型');
   const [dateFilter, setDateFilter] = useState('近7天');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [summaryDimension, setSummaryDimension] = useState<'buyer' | 'boat' | 'category'>('buyer');
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
 
   const tabs: { key: TabType; label: string }[] = [
     { key: 'all', label: '全部流水' },
@@ -21,12 +25,13 @@ const TransactionsPage: React.FC = () => {
   ];
 
   const getTransactionType = (t: Transaction): string => {
+    if (t.type === 'refund' || t.description.includes('退款')) return '退款';
     if (t.description.includes('油补')) return '油补发放';
     if (t.description.includes('渔获') || t.description.includes('结算款')) return '渔获结算';
-    if (t.type === 'refund' || t.description.includes('退款')) return '退款';
     if (t.description.includes('预付款')) return '预付款';
     if (t.description.includes('服务') || t.description.includes('泊位') || t.description.includes('收费')) return '服务收费';
-    if (t.description.includes('货款') || t.description.includes('欠款')) return '其他';
+    if (t.description.includes('欠款') || t.description.includes('回款')) return '欠款回款';
+    if (t.description.includes('货款')) return '其他';
     return '其他';
   };
 
@@ -151,12 +156,76 @@ const TransactionsPage: React.FC = () => {
 
   const handleTypeFilter = () => {
     Taro.showActionSheet({
-      itemList: ['全部类型', '渔获结算', '油补发放', '预付款', '退款', '服务收费', '其他']
+      itemList: ['全部类型', '渔获结算', '油补发放', '预付款', '退款', '服务收费', '欠款回款', '其他']
     }).then(res => {
-      const types = ['全部类型', '渔获结算', '油补发放', '预付款', '退款', '服务收费', '其他'];
+      const types = ['全部类型', '渔获结算', '油补发放', '预付款', '退款', '服务收费', '欠款回款', '其他'];
       setTypeFilter(types[res.tapIndex]);
       console.log('[Transactions] 筛选类型:', types[res.tapIndex]);
     }).catch(() => {});
+  };
+
+  const getSummaryKey = (t: Transaction, dim: 'buyer' | 'boat' | 'category'): string => {
+    if (dim === 'buyer') {
+      const desc = t.description;
+      if (desc.includes('-')) {
+        return desc.split('-')[0].trim();
+      }
+      return t.relatedBoat || '未归类';
+    }
+    if (dim === 'boat') {
+      return t.relatedBoat || '未关联渔船';
+    }
+    return getTransactionType(t);
+  };
+
+  const summaryData = useMemo(() => {
+    const result: Record<string, {
+      key: string;
+      todayIncome: number;
+      todayExpense: number;
+      sevenDayIncome: number;
+      sevenDayExpense: number;
+      count: number;
+      transactions: Transaction[];
+    }> = {};
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+    mockTransactions.forEach(t => {
+      const key = getSummaryKey(t, summaryDimension);
+      if (!result[key]) {
+        result[key] = {
+          key,
+          todayIncome: 0,
+          todayExpense: 0,
+          sevenDayIncome: 0,
+          sevenDayExpense: 0,
+          count: 0,
+          transactions: []
+        };
+      }
+      const isIncome = t.type === 'income' || t.type === 'refund';
+      const isToday = t.time.startsWith(todayStr);
+      const isSevenDay = isDateInRange(t.time, '近7天');
+
+      if (isToday) {
+        if (isIncome) result[key].todayIncome += t.amount;
+        else result[key].todayExpense += t.amount;
+      }
+      if (isSevenDay) {
+        if (isIncome) result[key].sevenDayIncome += t.amount;
+        else result[key].sevenDayExpense += t.amount;
+      }
+      result[key].count++;
+      result[key].transactions.push(t);
+    });
+    return Object.values(result).sort((a, b) => (b.sevenDayIncome + b.sevenDayExpense) - (a.sevenDayIncome + a.sevenDayExpense));
+  }, [summaryDimension]);
+
+  const dimensionLabels = {
+    buyer: { label: '按买家', icon: '👤' },
+    boat: { label: '按渔船', icon: '⛵' },
+    category: { label: '按费用', icon: '📊' }
   };
 
   const handleDateFilter = () => {
@@ -180,17 +249,49 @@ const TransactionsPage: React.FC = () => {
   const handleViewDetail = (t: Transaction) => {
     const typeText = t.type === 'income' ? '收入' : t.type === 'expense' ? '支出' : '退款';
     const directionText = t.type === 'expense' ? '资金流出 ↓' : '资金流入 ↑';
-    const directionClass = t.type === 'expense' ? '支出（红色）' : '收入（绿色）';
-    const buyerOrSeller = t.description.includes('欠款') || t.description.includes('货款') ? t.description.split('-')[0] : t.relatedBoat || '无';
     const bizType = getTransactionType(t);
-    const remarkMap: Record<string, string> = {
-      '退款': '预付款原路退回，3个工作日内到账',
-      '渔获结算': '包含渔获成交款和服务费结算',
-      '油补发放': '按季度燃油补贴，已完成审核',
-      '预付款': '买家预付保证金，用于后续竞价',
-      '服务收费': '港口泊位、装卸等服务费用',
-      '其他': '欠款还款或其他资金往来'
-    };
+    const descParts = t.description.split('-');
+    const primaryParty = descParts.length > 1 ? descParts[0].trim() : '';
+    const secondaryInfo = descParts.length > 1 ? descParts[1].trim() : t.description;
+
+    let relatedInfo = '';
+    let remark = '';
+    let chargeItem = '';
+    let berthInfo = '';
+
+    switch (bizType) {
+      case '退款':
+        relatedInfo = `👤 买家: ${primaryParty || '鲜达水产'}\n      💰 原交易: ${secondaryInfo || '预付款'}`;
+        remark = '预付款原路退回，退款将在1-3个工作日内原路返回买家支付账户。退款金额不计入当日收入统计。';
+        break;
+      case '预付款':
+        relatedInfo = `👤 买家: ${primaryParty || '鲜达水产'}\n      📝 用途: ${secondaryInfo || '保证金'}`;
+        remark = '买家预付保证金，用于后续渔获竞价交易。交易完成后自动抵扣货款，未使用部分可申请退款。';
+        break;
+      case '欠款回款':
+        relatedInfo = `👤 还款方: ${primaryParty || '鑫鑫海鲜'}\n      📄 款项类型: ${secondaryInfo || '欠款还款'}`;
+        remark = '买家偿还历史欠款。此笔款项为应收账款回收，计入当日收入但不计入渔获成交统计。请核对欠款余额是否正确。';
+        break;
+      case '服务收费':
+        chargeItem = secondaryInfo.includes('泊位') ? '泊位占用费' : secondaryInfo.includes('装卸') ? '装卸服务费' : secondaryInfo.includes('过磅') ? '过磅服务费' : '其他服务费';
+        berthInfo = t.relatedBoat ? `${t.relatedBoat} 停靠泊位` : '港口综合服务';
+        relatedInfo = `⛵ 关联渔船: ${t.relatedBoat || '无'}\n      📋 收费项目: ${chargeItem}\n      📍 泊位信息: ${berthInfo}`;
+        remark = `港口${chargeItem}，按收费标准计算。此笔费用为港口收入，计入服务收费统计。`;
+        break;
+      case '油补发放':
+        relatedInfo = `⛵ 渔船: ${t.relatedBoat || '无'}\n      📦 品类: ${t.relatedCategory || '燃油补贴'}`;
+        remark = '渔船燃油补贴，按季度发放，已完成渔业部门审核。此笔款项为政府补贴，不计入交易收入。';
+        break;
+      case '渔获结算':
+        relatedInfo = `⛵ 渔船: ${t.relatedBoat || '无'}\n      🐟 品类: ${t.relatedCategory || '渔获'}`;
+        remark = '渔获成交结算款，包含买家支付的渔获货款。此笔款项为交易核心收入，计入渔获成交统计。';
+        break;
+      default:
+        relatedInfo = t.relatedBoat ? `⛵ 渔船: ${t.relatedBoat}` : '';
+        if (t.relatedCategory) relatedInfo += `\n      📦 品类: ${t.relatedCategory}`;
+        remark = t.description;
+    }
+
     const statusFlow = t.status === 'pending' 
       ? '待确认 → 处理中 → 成功' 
       : t.status === 'success' 
@@ -207,16 +308,15 @@ const TransactionsPage: React.FC = () => {
 └────────────────────
 
 🔗 关联信息:
-  ${t.relatedBoat ? `渔船: ${t.relatedBoat}` : ''}
-  ${t.relatedCategory ? `品类: ${t.relatedCategory}` : ''}
-  ${buyerOrSeller !== '无' ? `${bizType === '退款' || bizType === '预付款' ? '买家' : '关联方'}: ${buyerOrSeller}` : ''}
-  操作人: ${t.operator}
+      ${relatedInfo || '无关联信息'}
+      操作人: ${t.operator}
 
 ⏰ 交易时间: ${t.time}
 📊 流转状态: ${getStatusText(t.status, 'transaction')}
-  ${statusFlow}
+      ${statusFlow}
 
-📝 备注: ${remarkMap[bizType] || t.description}
+📝 业务说明:
+      ${remark}
 
 ━━━━━━━━━━━━━━━━━━━`;
 
@@ -230,39 +330,75 @@ const TransactionsPage: React.FC = () => {
     console.log('[Transactions] 查看详情:', t.id, '类型:', bizType, '状态:', t.status);
   };
 
+  const handleDimensionChange = () => {
+    Taro.showActionSheet({
+      itemList: ['按买家汇总', '按渔船汇总', '按费用类型汇总']
+    }).then(res => {
+      const dims: ('buyer' | 'boat' | 'category')[] = ['buyer', 'boat', 'category'];
+      setSummaryDimension(dims[res.tapIndex]);
+    }).catch(() => {});
+  };
+
+  const handleToggleExpand = (key: string) => {
+    setExpandedKey(prev => prev === key ? null : key);
+  };
+
   return (
     <View className={styles.transactionsPage}>
       <View className={styles.filterSection}>
         <View className={styles.filterRow}>
-          <View className={styles.filterItem} onClick={handleTypeFilter}>
-            <View style={{ display: 'flex', alignItems: 'center' }}>
-              <Text className={styles.filterLabel}>类型:</Text>
-              <Text className={styles.filterValue}>{typeFilter}</Text>
-            </View>
-            <Text className={styles.arrow}>▼</Text>
+          <View className={classnames(styles.viewTab, viewMode === 'list' && styles.viewTabActive)} onClick={() => setViewMode('list')}>
+            <Text>📋 流水列表</Text>
           </View>
-          <View className={styles.filterItem} onClick={handleDateFilter}>
-            <View style={{ display: 'flex', alignItems: 'center' }}>
-              <Text className={styles.filterLabel}>时间:</Text>
-              <Text className={styles.filterValue}>{dateFilter}</Text>
-            </View>
-            <Text className={styles.arrow}>▼</Text>
+          <View className={classnames(styles.viewTab, viewMode === 'summary' && styles.viewTabActive)} onClick={() => setViewMode('summary')}>
+            <Text>📊 对账汇总</Text>
           </View>
         </View>
-        <View className={styles.filterRow}>
-          <View className={styles.filterItem} onClick={handleExport}>
-            <View style={{ display: 'flex', alignItems: 'center' }}>
-              <Text>📊</Text>
-              <Text className={styles.filterValue} style={{ marginLeft: '16rpx' }}>导出报表</Text>
+        {viewMode === 'list' && (
+          <>
+            <View className={styles.filterRow}>
+              <View className={styles.filterItem} onClick={handleTypeFilter}>
+                <View style={{ display: 'flex', alignItems: 'center' }}>
+                  <Text className={styles.filterLabel}>类型:</Text>
+                  <Text className={styles.filterValue}>{typeFilter}</Text>
+                </View>
+                <Text className={styles.arrow}>▼</Text>
+              </View>
+              <View className={styles.filterItem} onClick={handleDateFilter}>
+                <View style={{ display: 'flex', alignItems: 'center' }}>
+                  <Text className={styles.filterLabel}>时间:</Text>
+                  <Text className={styles.filterValue}>{dateFilter}</Text>
+                </View>
+                <Text className={styles.arrow}>▼</Text>
+              </View>
+            </View>
+            <View className={styles.filterRow}>
+              <View className={styles.filterItem} onClick={handleExport}>
+                <View style={{ display: 'flex', alignItems: 'center' }}>
+                  <Text>📊</Text>
+                  <Text className={styles.filterValue} style={{ marginLeft: '16rpx' }}>导出报表</Text>
+                </View>
+              </View>
+              <View className={styles.filterItem}>
+                <View style={{ display: 'flex', alignItems: 'center' }}>
+                  <Text>🔍</Text>
+                  <Text className={styles.filterValue} style={{ marginLeft: '16rpx' }}>搜索单号</Text>
+                </View>
+              </View>
+            </View>
+          </>
+        )}
+        {viewMode === 'summary' && (
+          <View className={styles.filterRow}>
+            <View className={styles.filterItem} onClick={handleDimensionChange} style={{ flex: 1 }}>
+              <View style={{ display: 'flex', alignItems: 'center' }}>
+                <Text>{dimensionLabels[summaryDimension].icon}</Text>
+                <Text className={styles.filterValue} style={{ marginLeft: '12rpx' }}>{dimensionLabels[summaryDimension].label}</Text>
+              </View>
+              <Text className={styles.arrow}>▼</Text>
             </View>
           </View>
-          <View className={styles.filterItem}>
-            <View style={{ display: 'flex', alignItems: 'center' }}>
-              <Text>🔍</Text>
-              <Text className={styles.filterValue} style={{ marginLeft: '16rpx' }}>搜索单号</Text>
-            </View>
-          </View>
-        </View>
+        )}
       </View>
 
       <View className={styles.tabs}>
@@ -310,58 +446,137 @@ const TransactionsPage: React.FC = () => {
         </View>
       </View>
 
-      {Object.entries(groupedByDate).length > 0 ? (
-        Object.entries(groupedByDate).map(([date, list]) => {
-          const dayIncome = list.filter(t => t.type === 'income' || t.type === 'refund').reduce((s, t) => s + t.amount, 0);
-          const dayExpense = list.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
-          return (
-            <View key={date} className={styles.dateGroup}>
-              <View className={styles.dateHeader}>
-                <Text className={styles.dateText}>📅 {date}</Text>
-                <View>
-                  <Text className={styles.incomeSum}>收 +¥{dayIncome.toLocaleString()}</Text>
-                  <Text className={styles.expenseSum}> 支 -¥{dayExpense.toLocaleString()}</Text>
-                </View>
-              </View>
-              {list.map(t => (
-                <View
-                  key={t.id}
-                  className={styles.transCard}
-                  onClick={() => handleViewDetail(t)}
-                >
-                  <View className={styles.transRow}>
-                    <View className={classnames(styles.transIcon, getIconClass(t.type))}>
-                      <Text>{getIcon(t.type)}</Text>
+      {viewMode === 'list' && (
+        <>
+          {Object.entries(groupedByDate).length > 0 ? (
+            Object.entries(groupedByDate).map(([date, list]) => {
+              const dayIncome = list.filter(t => t.type === 'income' || t.type === 'refund').reduce((s, t) => s + t.amount, 0);
+              const dayExpense = list.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+              return (
+                <View key={date} className={styles.dateGroup}>
+                  <View className={styles.dateHeader}>
+                    <Text className={styles.dateText}>📅 {date}</Text>
+                    <View>
+                      <Text className={styles.incomeSum}>收 +¥{dayIncome.toLocaleString()}</Text>
+                      <Text className={styles.expenseSum}> 支 -¥{dayExpense.toLocaleString()}</Text>
                     </View>
-                    <View className={styles.transContent}>
-                      <Text className={styles.transDesc}>{t.description}</Text>
-                      <View className={styles.transMeta}>
-                        <Text>{t.time.slice(11, 16)}</Text>
-                        <Text>·</Text>
-                        <View className={classnames(styles.statusTag, getStatusClass(t.status))}>
-                          <Text>{getStatusText(t.status, 'transaction')}</Text>
+                  </View>
+                  {list.map(t => (
+                    <View
+                      key={t.id}
+                      className={styles.transCard}
+                      onClick={() => handleViewDetail(t)}
+                    >
+                      <View className={styles.transRow}>
+                        <View className={classnames(styles.transIcon, getIconClass(t.type))}>
+                          <Text>{getIcon(t.type)}</Text>
                         </View>
-                        {t.relatedBoat && (
-                          <>
+                        <View className={styles.transContent}>
+                          <Text className={styles.transDesc}>{t.description}</Text>
+                          <View className={styles.transMeta}>
+                            <Text>{t.time.slice(11, 16)}</Text>
                             <Text>·</Text>
-                            <Text>{t.relatedBoat}</Text>
-                          </>
-                        )}
+                            <View className={classnames(styles.statusTag, getStatusClass(t.status))}>
+                              <Text>{getStatusText(t.status, 'transaction')}</Text>
+                            </View>
+                            {t.relatedBoat && (
+                              <>
+                                <Text>·</Text>
+                                <Text>{t.relatedBoat}</Text>
+                              </>
+                            )}
+                          </View>
+                        </View>
+                        <Text className={classnames(styles.transAmount, getAmountClass(t.type))}>
+                          {getAmountPrefix(t.type)}{formatCurrency(t.amount)}
+                        </Text>
                       </View>
                     </View>
-                    <Text className={classnames(styles.transAmount, getAmountClass(t.type))}>
-                      {getAmountPrefix(t.type)}{formatCurrency(t.amount)}
+                  ))}
+                </View>
+              );
+            })
+          ) : (
+            <View className={styles.emptyState}>
+              <Text className={styles.emptyIcon}>📋</Text>
+              <Text className={styles.emptyText}>暂无交易流水</Text>
+            </View>
+          )}
+        </>
+      )}
+
+      {viewMode === 'summary' && (
+        <View className={styles.summaryView}>
+          <View className={styles.summaryHeader}>
+            <View className={styles.summaryColHeader}>
+              <Text className={styles.summaryColTitle}>{dimensionLabels[summaryDimension].icon} {dimensionLabels[summaryDimension].label}</Text>
+            </View>
+            <View className={styles.summaryColHeader}>
+              <Text className={styles.summaryColTitle}>今日</Text>
+            </View>
+            <View className={styles.summaryColHeader}>
+              <Text className={styles.summaryColTitle}>近7天</Text>
+            </View>
+          </View>
+          {summaryData.map(item => {
+            const todayNet = item.todayIncome - item.todayExpense;
+            const sevenDayNet = item.sevenDayIncome - item.sevenDayExpense;
+            const isExpanded = expandedKey === item.key;
+            return (
+              <View key={item.key}>
+                <View
+                  className={styles.summaryRow}
+                  onClick={() => handleToggleExpand(item.key)}
+                >
+                  <View className={styles.summaryCol}>
+                    <Text className={styles.summaryKey}>{item.key}</Text>
+                    <Text className={styles.summaryCount}>{item.count}笔</Text>
+                  </View>
+                  <View className={styles.summaryCol}>
+                    <Text className={classnames(styles.summaryAmount, todayNet >= 0 ? styles.income : styles.expense)}>
+                      {todayNet >= 0 ? '+' : ''}¥{todayNet.toLocaleString()}
                     </Text>
                   </View>
+                  <View className={styles.summaryCol}>
+                    <Text className={classnames(styles.summaryAmount, sevenDayNet >= 0 ? styles.income : styles.expense)}>
+                      {sevenDayNet >= 0 ? '+' : ''}¥{sevenDayNet.toLocaleString()}
+                    </Text>
+                  </View>
+                  <Text className={styles.expandArrow}>{isExpanded ? '▲' : '▼'}</Text>
                 </View>
-              ))}
-            </View>
-          );
-        })
-      ) : (
-        <View className={styles.emptyState}>
-          <Text className={styles.emptyIcon}>📋</Text>
-          <Text className={styles.emptyText}>暂无交易流水</Text>
+                {isExpanded && (
+                  <View className={styles.summaryDetail}>
+                    {item.transactions.map(t => (
+                      <View
+                        key={t.id}
+                        className={styles.summaryDetailItem}
+                        onClick={() => handleViewDetail(t)}
+                      >
+                        <View className={styles.transRow}>
+                          <View className={classnames(styles.transIcon, getIconClass(t.type))}>
+                            <Text>{getIcon(t.type)}</Text>
+                          </View>
+                          <View className={styles.transContent}>
+                            <Text className={styles.transDesc}>{t.description}</Text>
+                            <View className={styles.transMeta}>
+                              <Text>{t.time.slice(5, 16)}</Text>
+                              <Text>·</Text>
+                              <View className={classnames(styles.statusTag, getStatusClass(t.status))}>
+                                <Text>{getStatusText(t.status, 'transaction')}</Text>
+                              </View>
+                            </View>
+                          </View>
+                          <Text className={classnames(styles.transAmount, getAmountClass(t.type))}>
+                            {getAmountPrefix(t.type)}{formatCurrency(t.amount)}
+                          </Text>
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            );
+          })}
         </View>
       )}
     </View>

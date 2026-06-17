@@ -31,8 +31,7 @@ const QueueCard: React.FC<QueueCardProps> = ({ data, onAssign }) => {
       content: `确认安排 ${data.boatName} 停靠 ${data.expectedBerth} 泊位？`,
       success: (res) => {
         if (res.confirm) {
-          Taro.showToast({ title: '泊位已分配', icon: 'success' });
-          console.log('[QueueCard] 分配泊位:', data.expectedBerth);
+          console.log('[QueueCard] 请求分配泊位:', data.expectedBerth);
           onAssign?.(data);
         }
       }
