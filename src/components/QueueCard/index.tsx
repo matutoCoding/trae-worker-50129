@@ -67,14 +67,16 @@ const QueueCard: React.FC<QueueCardProps> = ({ data, onAssign }) => {
         </View>
       </View>
 
-      <View className={styles.actionRow}>
-        <View className={classnames(styles.action, styles.actionSecondary)} onClick={handleNotify}>
-          <Text>通知船主</Text>
+      {data.status !== 'docked' && (
+        <View className={styles.actionRow}>
+          <View className={classnames(styles.action, styles.actionSecondary)} onClick={handleNotify}>
+            <Text>通知船主</Text>
+          </View>
+          <View className={classnames(styles.action, styles.actionPrimary)} onClick={handleAssign}>
+            <Text>安排靠泊</Text>
+          </View>
         </View>
-        <View className={classnames(styles.action, styles.actionPrimary)} onClick={handleAssign}>
-          <Text>安排靠泊</Text>
-        </View>
-      </View>
+      )}
     </View>
   );
 };

@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import styles from './index.module.scss';
 import PriceCard from '@/components/PriceCard';
 import { mockMarketPrices, mockSettlements, mockTransactions, mockDebts } from '@/data/market';
-import { formatCurrency } from '@/utils';
+import { formatCurrency, getStatusText } from '@/utils';
 import type { Transaction } from '@/types';
 
 const MarketPage: React.FC = () => {
@@ -64,6 +64,15 @@ const MarketPage: React.FC = () => {
       refund: styles.transAmountRefund
     };
     return map[type];
+  };
+
+  const getStatusClass = (status: Transaction['status']) => {
+    const map: Record<string, string> = {
+      success: styles.statusTagSuccess,
+      pending: styles.statusTagPending,
+      failed: styles.statusTagFailed
+    };
+    return map[status];
   };
 
   const getAmountPrefix = (type: Transaction['type']) => {
@@ -177,7 +186,7 @@ const MarketPage: React.FC = () => {
           </Text>
         </View>
         <View className={styles.transList}>
-          {mockTransactions.slice(0, 5).map(trans => (
+          {[...mockTransactions].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 5).map(trans => (
             <View
               key={trans.id}
               className={styles.transItem}
@@ -192,9 +201,14 @@ const MarketPage: React.FC = () => {
                   <Text className={styles.transTime}>{trans.time.slice(5, 16)} · {trans.operator}</Text>
                 </View>
               </View>
-              <Text className={classnames(styles.transAmount, getTransAmountClass(trans.type))}>
-                {getAmountPrefix(trans.type)}{formatCurrency(trans.amount)}
-              </Text>
+              <View className={styles.transRight}>
+                <Text className={classnames(styles.transAmount, getTransAmountClass(trans.type))}>
+                  {getAmountPrefix(trans.type)}{formatCurrency(trans.amount)}
+                </Text>
+                <View className={classnames(styles.statusTag, getStatusClass(trans.status))}>
+                  <Text>{getStatusText(trans.status, 'transaction')}</Text>
+                </View>
+              </View>
             </View>
           ))}
         </View>

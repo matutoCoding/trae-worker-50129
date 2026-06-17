@@ -4,7 +4,7 @@ import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
 import { mockTransactions } from '@/data/market';
-import { getStatusText, formatCurrency } from '@/utils';
+import { getStatusText, formatCurrency, formatDate } from '@/utils';
 import type { Transaction } from '@/types';
 
 type TabType = 'all' | 'income' | 'expense';
@@ -20,8 +20,47 @@ const TransactionsPage: React.FC = () => {
     { key: 'expense', label: '支出' }
   ];
 
+  const getTransactionType = (t: Transaction): string => {
+    if (t.description.includes('油补')) return '油补发放';
+    if (t.description.includes('渔获') || t.description.includes('结算款')) return '渔获结算';
+    if (t.type === 'refund' || t.description.includes('退款')) return '退款';
+    if (t.description.includes('预付款')) return '预付款';
+    if (t.description.includes('服务') || t.description.includes('泊位') || t.description.includes('收费')) return '服务收费';
+    if (t.description.includes('货款') || t.description.includes('欠款')) return '其他';
+    return '其他';
+  };
+
+  const isDateInRange = (dateStr: string, range: string): boolean => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    switch (range) {
+      case '近7天': {
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(today.getDate() - 6);
+        return date >= sevenDaysAgo && date <= today;
+      }
+      case '近30天': {
+        const thirtyDaysAgo = new Date(today);
+        thirtyDaysAgo.setDate(today.getDate() - 29);
+        return date >= thirtyDaysAgo && date <= today;
+      }
+      case '本月': {
+        return date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+      }
+      case '上月': {
+        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        return date.getMonth() === lastMonth.getMonth() && date.getFullYear() === lastMonth.getFullYear();
+      }
+      default:
+        return true;
+    }
+  };
+
   const filteredTransactions = useMemo(() => {
     let result = [...mockTransactions];
+    
     if (activeTab !== 'all') {
       if (activeTab === 'income') {
         result = result.filter(t => t.type === 'income' || t.type === 'refund');
@@ -29,9 +68,20 @@ const TransactionsPage: React.FC = () => {
         result = result.filter(t => t.type === 'expense');
       }
     }
-    console.log('[Transactions] 筛选后数据:', result.length, '条, tab:', activeTab);
+    
+    if (typeFilter !== '全部类型') {
+      result = result.filter(t => getTransactionType(t) === typeFilter);
+    }
+    
+    if (dateFilter !== '近7天') {
+      result = result.filter(t => isDateInRange(t.time, dateFilter));
+    } else {
+      result = result.filter(t => isDateInRange(t.time, '近7天'));
+    }
+    
+    console.log('[Transactions] 筛选后数据:', result.length, '条, tab:', activeTab, 'type:', typeFilter, 'date:', dateFilter);
     return result;
-  }, [activeTab]);
+  }, [activeTab, typeFilter, dateFilter]);
 
   const totalIncome = useMemo(() => {
     return mockTransactions

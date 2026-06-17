@@ -84,7 +84,7 @@ export const getStatusText = (status: string, type: string): string => {
     },
     transaction: {
       success: '成功',
-      pending: '处理中',
+      pending: '待处理',
       failed: '失败'
     }
   };

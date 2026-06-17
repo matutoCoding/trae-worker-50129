@@ -25,6 +25,10 @@ const QueuePage: React.FC = () => {
   });
 
   const handleAssign = useCallback((item: QueueItem) => {
+    if (item.status === 'docked') {
+      Taro.showToast({ title: '该船已靠泊', icon: 'none' });
+      return;
+    }
     setQueue(prev => prev.map(q =>
       q.id === item.id ? { ...q, status: 'docked' as const } : q
     ));

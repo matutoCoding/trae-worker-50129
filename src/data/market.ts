@@ -235,7 +235,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: 'TX202606170005',
-    type: 'expense',
+    type: 'refund',
     amount: 5800,
     description: '鲜达水产-预付款退款',
     time: '2026-06-17 09:30:00',
@@ -282,7 +282,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: 'TX202606160005',
-    type: 'pending',
+    type: 'income',
     amount: 20000,
     description: '鑫鑫海鲜-欠款还款',
     time: '2026-06-16 14:20:00',
